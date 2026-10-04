@@ -3,112 +3,155 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>OpenRouter Stealth Radar</title>
+  <title>OpenRouter · Pre-Release & Canary Monitor</title>
   <link rel="stylesheet" href="style.css">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220%22%22100%22><text y=%22.9em%22 font-size=%2290%22>🕵️</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 </head>
 <body>
 
-  <header class="header">
-    <div class="header-left">
-      <span class="live-pulse"></span>
-      <h1>OPENROUTER STEALTH RADAR</h1>
-    </div>
-    <div class="header-actions">
-      <span id="api-status" class="badge">BAĞLANIYOR...</span>
-      <button id="btn-scan" onclick="triggerManualScan()">ŞİMDİ TARA</button>
-    </div>
-  </header>
+  <div class="app-layout">
 
-  <main class="container">
+    <!-- Top Navigation Bar -->
+    <header class="top-nav">
+      <div class="brand">
+        <span class="brand-title">OpenRouter</span>
+        <span class="brand-divider">/</span>
+        <span class="brand-subtitle">Canary & Stealth Monitor</span>
+      </div>
 
-    <!-- Acil Alarm Kutusu (Yeni model gelince tetiklenir) -->
-    <div id="new-model-alert" class="alert-box hidden">
-      <div class="alert-badge">🚨 YENİ STEALTH MODEL TESPİT EDİLDİ!</div>
-      <div id="alert-content" class="alert-body"></div>
-    </div>
+      <div class="nav-controls">
+        <div class="status-indicator" id="status-pill">
+          <span class="status-dot online"></span>
+          <span class="status-label" id="status-label">API Bağlı</span>
+          <span class="status-latency" id="latency-label">34ms</span>
+        </div>
 
-    <!-- Sistem İstatistikleri -->
-    <section class="metrics-grid">
-      <div class="metric-card">
-        <div class="metric-label">Aktif Stealth Modeller</div>
-        <div class="metric-val" id="active-count">0</div>
-        <div class="metric-sub">OpenRouter API üzerinde yayında</div>
+        <button class="btn-sync" id="btn-sync" onclick="triggerManualScan()">
+          <svg class="icon-refresh" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
+          </svg>
+          <span>Yenile</span>
+        </button>
       </div>
-      <div class="metric-card">
-        <div class="metric-label">Toplam Taranan Model</div>
-        <div class="metric-val" id="total-count">0</div>
-        <div class="metric-sub">Katalog boyutu</div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-label">Son Tarama</div>
-        <div class="metric-val text-sm" id="last-checked">--</div>
-        <div class="metric-sub" id="latency-text">0 ms gecikme</div>
-      </div>
-      <div class="metric-card highlight">
-        <div class="metric-label">Bir Sonraki Model Tahmini</div>
-        <div class="metric-val text-sm" style="color: #ff3366;">8 - 16 Ekim 2026</div>
-        <div class="metric-sub">Pencere Olasılığı: %52 (Sprint Fazı)</div>
-      </div>
-    </section>
+    </header>
 
-    <!-- Aktif Stealth Modeller -->
-    <section class="section">
-      <div class="section-header">
-        <h2>Canlıda Olan Stealth Modeller</h2>
-        <span class="count-tag" id="active-badge">0 Model</span>
-      </div>
-      <div id="active-list" class="model-list">
-        <div class="loading">Yükleniyor...</div>
-      </div>
-    </section>
+    <main class="main-content">
 
-    <!-- Tahmin ve Kritik Bilgi Notu -->
-    <section class="section note-section">
-      <h3>Radar Notu: Space Bunny Alpha & Önizleme Rotasyonu</h3>
-      <p>
-        Şu anki aktif stealth model <strong>stealth/space-bunny-alpha</strong> için ücretsiz rota <strong>5 Ekim 2026</strong>'da kaldırılacaktır.
-        Eylül 2026'daki 14 Eylül EULA güncellemesi sonrası sistem aktif sprint durumundadır. Bu sistem arayüze (UI) düşmeden 2-6 saat önce doğrudan OpenRouter API'sini tarayarak yakalar.
-      </p>
-    </section>
-
-    <!-- Geçmiş Stealth Arşivi -->
-    <section class="section">
-      <div class="section-header">
-        <h2>Geçmiş Stealth Kronolojisi (2025 - 2026)</h2>
+      <!-- Alert Notification Banner (Hidden by default, shown when unannounced model spotted) -->
+      <div id="new-model-alert" class="alert-banner hidden">
+        <div class="alert-dot"></div>
+        <div class="alert-text" id="alert-content">
+          Yeni önizleme modeli tespit edildi.
+        </div>
       </div>
-      <div class="table-wrapper">
-        <table class="simple-table">
-          <thead>
-            <tr>
-              <th>Model ID / Kod Adı</th>
-              <th>Çıkış Tarihi</th>
-              <th>Aralık (&Delta;t)</th>
-              <th>Ortaya Çıkan Kimlik / Not</th>
-            </tr>
-          </thead>
-          <tbody id="history-body">
-            <!-- JS ile doldurulacak -->
-          </tbody>
-        </table>
-      </div>
-    </section>
 
-    <!-- Canlı Olay / Alarm Geçmişi -->
-    <section class="section">
-      <div class="section-header">
-        <h2>Algılanan Olaylar (Canlı Log)</h2>
-      </div>
-      <div id="events-log" class="log-container">
-        <div class="log-entry empty">Henüz yeni bir stealth olay kaydı yok. Sistem izlemede.</div>
-      </div>
-    </section>
+      <!-- Key Metrics Strip -->
+      <section class="metrics-bar">
+        <div class="metric-item">
+          <span class="metric-caption">Aktif Pre-Release</span>
+          <div class="metric-number" id="active-count">1</div>
+          <span class="metric-subtext">OpenRouter API'de yayında</span>
+        </div>
 
-  </main>
+        <div class="metric-item">
+          <span class="metric-caption">Taranan Katalog</span>
+          <div class="metric-number" id="total-count">466</div>
+          <span class="metric-subtext">Genel model havuzu</span>
+        </div>
 
-  <footer class="footer">
-    <p>OpenRouter API Poller | Doğrudan API /models Endpoint'i İzlenmektedir.</p>
-  </footer>
+        <div class="metric-item">
+          <span class="metric-caption">Son Eşitleme</span>
+          <div class="metric-number" id="last-checked">Az önce</div>
+          <span class="metric-subtext" id="sync-subtext">30 sn aralıkla otomatik</span>
+        </div>
+
+        <div class="metric-item accent-metric">
+          <span class="metric-caption">Bir Sonraki Model Projeksiyonu</span>
+          <div class="metric-number highlight-text">8 — 16 Ekim 2026</div>
+          <span class="metric-subtext">Tahmini olasılık penceresi (%52)</span>
+        </div>
+      </section>
+
+      <!-- Active Stealth Models -->
+      <section class="content-block">
+        <div class="block-header">
+          <div>
+            <h2 class="block-title">Yayındaki Erken Erişim Modelleri</h2>
+            <p class="block-desc">OpenRouter üzerinde vitrine çıkmadan doğrudan API rotasında aktifleşen modeller.</p>
+          </div>
+          <span class="pill-counter" id="active-badge">1 model aktif</span>
+        </div>
+
+        <div id="active-list" class="cards-container">
+          <div class="empty-state">Yükleniyor...</div>
+        </div>
+      </section>
+
+      <!-- Projeksiyon ve Rotasyon Notu -->
+      <section class="intel-card">
+        <div class="intel-header">
+          <span class="intel-tag">Döngü Analizi</span>
+          <span class="intel-date">Ekim 2026</span>
+        </div>
+        <h3 class="intel-title">Space Bunny Alpha Rotasyonu ve Beklenen Slot Boşalması</h3>
+        <p class="intel-body">
+          Aktif <code>stealth/space-bunny-alpha</code> modelinin ücretsiz test rotası <strong>5 Ekim 2026</strong> tarihinde sonlanmaktadır.
+          OpenRouter'ın 14 Eylül EULA güncellemesiyle kurumsallaşan test altyapısında, bir modelin kalkışını takip eden <strong>3 ila 11 gün</strong> içinde yeni bir laboratuvar checkpoint'inin canlandığı gözlemlenmiştir. Bu sistem, modeli arayüz vitrinine düşmeden saatler önce doğrudan API telemetrisinden yakalar.
+        </p>
+      </section>
+
+      <!-- Historical Archive Table -->
+      <section class="content-block">
+        <div class="block-header">
+          <div>
+            <h2 class="block-title">Stealth Model Arşivi (2025 — 2026)</h2>
+            <p class="block-desc">Geçmiş anonim testler, çıkış aralıkları ve sonradan doğrulanan üretici kimlikleri.</p>
+          </div>
+        </div>
+
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Model Tanımlayıcı</th>
+                <th>Çıkış Tarihi</th>
+                <th>Aralık (&Delta;t)</th>
+                <th>Doğrulanan Üretici / Laboratuvar</th>
+                <th>Bağlam & Not</th>
+              </tr>
+            </thead>
+            <tbody id="history-body">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- System Telemetry & Event Log -->
+      <section class="content-block">
+        <div class="block-header">
+          <div>
+            <h2 class="block-title">Sistem Telemetrisi</h2>
+            <p class="block-desc">Olay geçmişi ve API eşitleme kayıtları.</p>
+          </div>
+        </div>
+        <div class="telemetry-box" id="events-log">
+          <div class="telemetry-row muted">Sistem arka planda aktif; her 30 saniyede bir /api/v1/models taranıyor.</div>
+        </div>
+      </section>
+
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <span>OpenRouter Pre-Release Detection Infrastructure</span>
+        <span class="footer-meta">Keep-Alive: 10m · Render Free 24/7 Enabled</span>
+      </div>
+    </footer>
+
+  </div>
 
   <script src="app.js"></script>
 </body>
