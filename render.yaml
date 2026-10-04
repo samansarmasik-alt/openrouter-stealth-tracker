@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: openrouter-stealth-radar
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: POLL_INTERVAL_SECONDS
+        value: 30
+      - key: KEEP_ALIVE_INTERVAL_MINUTES
+        value: 10

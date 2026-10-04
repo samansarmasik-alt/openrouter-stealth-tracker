@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenRouter Stealth Radar</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220%22%22100%22><text y=%22.9em%22 font-size=%2290%22>🕵️</text></svg>">
+</head>
+<body>
+
+  <header class="header">
+    <div class="header-left">
+      <span class="live-pulse"></span>
+      <h1>OPENROUTER STEALTH RADAR</h1>
+    </div>
+    <div class="header-actions">
+      <span id="api-status" class="badge">BAĞLANIYOR...</span>
+      <button id="btn-scan" onclick="triggerManualScan()">ŞİMDİ TARA</button>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- Acil Alarm Kutusu (Yeni model gelince tetiklenir) -->
+    <div id="new-model-alert" class="alert-box hidden">
+      <div class="alert-badge">🚨 YENİ STEALTH MODEL TESPİT EDİLDİ!</div>
+      <div id="alert-content" class="alert-body"></div>
+    </div>
+
+    <!-- Sistem İstatistikleri -->
+    <section class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-label">Aktif Stealth Modeller</div>
+        <div class="metric-val" id="active-count">0</div>
+        <div class="metric-sub">OpenRouter API üzerinde yayında</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Toplam Taranan Model</div>
+        <div class="metric-val" id="total-count">0</div>
+        <div class="metric-sub">Katalog boyutu</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Son Tarama</div>
+        <div class="metric-val text-sm" id="last-checked">--</div>
+        <div class="metric-sub" id="latency-text">0 ms gecikme</div>
+      </div>
+      <div class="metric-card highlight">
+        <div class="metric-label">Bir Sonraki Model Tahmini</div>
+        <div class="metric-val text-sm" style="color: #ff3366;">8 - 16 Ekim 2026</div>
+        <div class="metric-sub">Pencere Olasılığı: %52 (Sprint Fazı)</div>
+      </div>
+    </section>
+
+    <!-- Aktif Stealth Modeller -->
+    <section class="section">
+      <div class="section-header">
+        <h2>Canlıda Olan Stealth Modeller</h2>
+        <span class="count-tag" id="active-badge">0 Model</span>
+      </div>
+      <div id="active-list" class="model-list">
+        <div class="loading">Yükleniyor...</div>
+      </div>
+    </section>
+
+    <!-- Tahmin ve Kritik Bilgi Notu -->
+    <section class="section note-section">
+      <h3>Radar Notu: Space Bunny Alpha & Önizleme Rotasyonu</h3>
+      <p>
+        Şu anki aktif stealth model <strong>stealth/space-bunny-alpha</strong> için ücretsiz rota <strong>5 Ekim 2026</strong>'da kaldırılacaktır.
+        Eylül 2026'daki 14 Eylül EULA güncellemesi sonrası sistem aktif sprint durumundadır. Bu sistem arayüze (UI) düşmeden 2-6 saat önce doğrudan OpenRouter API'sini tarayarak yakalar.
+      </p>
+    </section>
+
+    <!-- Geçmiş Stealth Arşivi -->
+    <section class="section">
+      <div class="section-header">
+        <h2>Geçmiş Stealth Kronolojisi (2025 - 2026)</h2>
+      </div>
+      <div class="table-wrapper">
+        <table class="simple-table">
+          <thead>
+            <tr>
+              <th>Model ID / Kod Adı</th>
+              <th>Çıkış Tarihi</th>
+              <th>Aralık (&Delta;t)</th>
+              <th>Ortaya Çıkan Kimlik / Not</th>
+            </tr>
+          </thead>
+          <tbody id="history-body">
+            <!-- JS ile doldurulacak -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Canlı Olay / Alarm Geçmişi -->
+    <section class="section">
+      <div class="section-header">
+        <h2>Algılanan Olaylar (Canlı Log)</h2>
+      </div>
+      <div id="events-log" class="log-container">
+        <div class="log-entry empty">Henüz yeni bir stealth olay kaydı yok. Sistem izlemede.</div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <p>OpenRouter API Poller | Doğrudan API /models Endpoint'i İzlenmektedir.</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
